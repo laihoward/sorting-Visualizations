@@ -1,5 +1,5 @@
 import React from 'react';
-import {Autorenew,PlayArrow,Pause} from '@material-ui/icons';
+import {Autorenew,PlayArrow,Pause,SkipPrevious,SkipNext} from '@material-ui/icons';
 import { IconButton } from '@material-ui/core';
 import bubbleSort from './algorithms/bubbleSort';
 import './App.css';
@@ -15,8 +15,7 @@ class App extends React.Component{
     currentStep:0,//bar排序顏色變化的步驟數
     barCount:10,//資料數量
     timeouts: [],
-    algorithm: 'Bubble Sort',
-    timeouts: [],
+    delay:200,
   }
   
   componentDidMount(){
@@ -25,6 +24,7 @@ class App extends React.Component{
 
   generateBars = ()=>{
     this.clearColorKey();
+    this.clearTimeouts();
     //parseInt將輸入的字串轉為整數
     let barCount = parseInt(this.state.barCount);
     let barsTemp = [];
@@ -59,6 +59,7 @@ class App extends React.Component{
   }
 
   generateSteps=()=>{
+    
     //複製array arraySteps colorSteps三組數據
     let array = this.state.array.slice();
     let steps = this.state.arraySteps.slice();
@@ -78,7 +79,7 @@ class App extends React.Component{
     this.clearTimeouts();
     let timeouts = [];
     let i = 0;
-
+    //steps.length - this.state.currentStep決定剩下的步數
     while (i < steps.length - this.state.currentStep) {
       let timeout = setTimeout(() => {
         let currentStep = this.state.currentStep;
@@ -95,7 +96,28 @@ class App extends React.Component{
       timeouts: timeouts,
     });
   }
+  
+  stepBack=()=>{
+    if (this.state.currentStep === 0) return;
+    this.clearTimeouts();
+    let currentStep = this.state.currentStep-1;
+    this.setState({
+      array: this.state.arraySteps[currentStep],
+      colorKey: this.state.colorSteps[currentStep],
+      currentStep: currentStep,
+    });
+  }
+  stepForward=()=>{
+    if(this.state.currentStep>=this.state.arraySteps.length-1) return;
+    this.clearTimeouts();
+    let currentStep = this.state.currentStep+1;
+    this.setState({
+      array: this.state.arraySteps[currentStep],
+      colorKey: this.state.colorSteps[currentStep],
+      currentStep: currentStep,
+    });
 
+  }
 
   render(){
     //map對array進行循環
@@ -117,7 +139,7 @@ class App extends React.Component{
       //完成排序
     }else if(this.state.currentStep == this.state.arraySteps.length){
       playarrayBtn = (
-        <IconButton onClick={()=>this.generateBars()}>
+        <IconButton color="secondary" onClick={()=>this.generateBars()}>
           <Autorenew/>
         </IconButton>
       );
@@ -132,7 +154,7 @@ class App extends React.Component{
 
     return(
       <div className="App">
-        <h1>bubblesort visualizing</h1>
+        <h1>bubblesort visualization</h1>
         {/* bar的繪製 */}
         <section className="bars card container">
           {barsDiv}
@@ -142,7 +164,13 @@ class App extends React.Component{
           <IconButton onClick={()=>this.generateBars()}>
             <Autorenew/>
           </IconButton>
+          <IconButton onClick={this.stepBack} >
+            <SkipPrevious />
+          </IconButton>
           {playarrayBtn}
+          <IconButton onClick={this.stepForward} >
+            <SkipNext />
+          </IconButton> 
         </section>
       </div>
     )
