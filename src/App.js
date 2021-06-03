@@ -2,6 +2,7 @@ import React from 'react';
 import {Autorenew,PlayArrow,Pause,SkipPrevious,SkipNext} from '@material-ui/icons';
 import { IconButton } from '@material-ui/core';
 import bubbleSort from './algorithms/bubbleSort';
+import mergeSort from './algorithms/mergeSort';
 import './App.css';
 
 import Bar from './components/Bar';
@@ -15,7 +16,12 @@ class App extends React.Component{
     currentStep:0,//bar排序顏色變化的步驟數
     barCount:10,//資料數量
     timeouts: [],
-    delay:200,
+    delay:300,
+    algorithms:'Bubble Sort'
+  }
+  algorithmsSet = {
+    'Bubble Sort': bubbleSort,
+    'Merge Sort': mergeSort,
   }
   
   componentDidMount(){
@@ -34,6 +40,7 @@ class App extends React.Component{
     }
     //{}中為 更新4個數據  
     //()=>this.generateSteps(): 將4個數據傳給函數 並將數據更新為函數的輸出
+    this.state.arraySteps = [barsTemp]
     this.setState({
       array:barsTemp,
       arraySteps:[barsTemp],
@@ -58,14 +65,33 @@ class App extends React.Component{
     })
   }
 
+  changeToBubbleSort=()=>{
+    this.setState({
+      algorithms: 'Bubble Sort',
+      currentStep: 0,
+      arraySteps: [this.state.arraySteps[this.state.currentStep === 0 ? 0 : this.state.currentStep - 1]],
+    }, () => this.generateSteps());
+    this.clearTimeouts();
+    this.clearColorKey();
+  }
+
+  changeToMergeSor= (e) =>{
+    this.setState({
+      algorithms: e.target.value,
+      currentStep: 0,
+      arraySteps: [this.state.arraySteps[this.state.currentStep === 0 ? 0 : this.state.currentStep - 1]],
+    }, () => this.generateSteps());
+    this.clearTimeouts();
+    this.clearColorKey();
+  }
+
   generateSteps=()=>{
-    
     //複製array arraySteps colorSteps三組數據
     let array = this.state.array.slice();
     let steps = this.state.arraySteps.slice();
     let colorSteps = this.state.colorSteps.slice();
     //執行演算法放入參數(array, 0, steps, colorSteps)
-    bubbleSort(array, 0, steps, colorSteps);
+    this.algorithmsSet[this.state.algorithms](array, 0, steps, colorSteps);
     this.setState({
       arraySteps: steps,
       colorSteps: colorSteps,
@@ -154,7 +180,18 @@ class App extends React.Component{
 
     return(
       <div className="App">
-        <h1>bubblesort visualization</h1>
+        <h1>sort visualization</h1>
+        <section className="algorithm Btn">
+          <button   
+            className="bubblesortBtn"
+            onClick={this.changeToBubbleSort}
+          >Bubble Sort</button>
+          <button 
+            className="mergesortBtn"
+            value ="Merge Sort"
+            onClick={this.changeToMergeSor}
+          >Merge Sort</button>
+        </section>
         {/* bar的繪製 */}
         <section className="bars card container">
           {barsDiv}
@@ -172,6 +209,7 @@ class App extends React.Component{
             <SkipNext />
           </IconButton> 
         </section>
+
       </div>
     )
   }
