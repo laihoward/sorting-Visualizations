@@ -4,6 +4,7 @@ import { IconButton } from '@material-ui/core';
 import bubbleSort from './algorithms/bubbleSort';
 import mergeSort from './algorithms/mergeSort';
 import quickSort from './algorithms/quickSort';
+import selectionSort from './algorithms/selectionSort';
 import './App.css';
 
 import Bar from './components/Bar';
@@ -24,7 +25,7 @@ class App extends React.Component{
     'Bubble Sort': bubbleSort,
     'Merge Sort': mergeSort,
     'Quick Sort': quickSort,
-
+    'Selection Sort':selectionSort,
   }
   
   componentDidMount(){
@@ -87,6 +88,15 @@ class App extends React.Component{
     this.clearColorKey();
   }
   changeToMergeSor= (e) =>{
+    this.setState({
+      algorithms: e.target.value,
+      currentStep: 0,
+      arraySteps: [this.state.arraySteps[this.state.currentStep === 0 ? 0 : this.state.currentStep - 1]],
+    }, () => this.generateSteps());
+    this.clearTimeouts();
+    this.clearColorKey();
+  }
+  changeToSelectionSor= (e) =>{
     this.setState({
       algorithms: e.target.value,
       currentStep: 0,
@@ -207,6 +217,11 @@ class App extends React.Component{
             value ="Quick Sort"
             onClick={this.changeToQuickSort}
           >Quick Sort</button>
+          <button 
+            className="selectionsortBtn"
+            value ="Selection Sort"
+            onClick={this.changeToSelectionSor}
+          >Selection Sort</button>
         </section>
         {/* bar的繪製 */}
         <section className="bars card container">
