@@ -276,8 +276,98 @@ generateSteps=()=>{
 ```
 經過上述三個函式的運作，已經備製好視覺化每個步驟的陣列arraySteps以及colorSteps。
 
-<font color=red>arraySteps</font>
+**<font color=red>arraySteps</font>**
 負責bar排序的過程中數值的變化步驟 每一個步驟為一個array
 
-<font color=red>colorSteps</font>
+**<font color=red>colorSteps</font>**
 負責bar排序的過程中顏色的變化步驟 每一個步驟為一個array
+
+### clearColorKey()
+初始化colorKey和colorSteps兩個變數，將2個變數的值都初始化為0。
+```javascript=
+clearColorKey(){ 
+    //resetKey為barCount個0的array
+    let resetKey = new Array(parseInt(this.state.barCount)).fill(0);
+    this.setState({
+      colorKey :resetKey,
+      colorSteps :[resetKey],
+    });
+  }
+```
+### clearTimeouts()
+初始化timeouts變數。
+```javascript=
+clearTimeouts = () => {
+    this.state.timeouts.forEach(timeout => clearTimeout(timeout));
+    this.setState({
+      timeouts: [],
+    })
+  }
+```
+### changeToBubbleSort()
+按下Bubble Sort的按鈕後，會呼叫此函數，將變數algorithms更改為Bubble Sort，currentStep為0。
+
+如果this.state.currentStep === 0，arraySteps =arraySteps[0]
+
+如果不為0，arraySteps =arraySteps[currentStep - 1]
+
+在將這3個變數傳給函數generateSteps()，讓資料以Bubble Sort進行排列。
+函數changeToQuickSort()、changeToMergeSor()和changeToSelectionSor()皆以此原理更改變數algorithms並進行排列。
+```javascript=
+changeToBubbleSort=()=>{
+    this.setState({
+      algorithms: 'Bubble Sort',
+      currentStep: 0,
+      arraySteps: [this.state.arraySteps[this.state.currentStep === 0 ? 0 : this.state.currentStep - 1]],
+    }, () => this.generateSteps());
+    this.clearTimeouts();
+    this.clearColorKey();
+  }
+```
+## 介紹演算法
+這次視覺化採用4種sort algorithms，分別是Bubble Sort、Merge Sort、Quick Sort和Selection Sort，以下依序介紹排列原理。
+### Bubble Sort
+演算法原理是從陣列的最前面開始，一次比較陣列中兩兩相鄰的元素，然後根據大小將它們調換順序，大的移到後面，以此類推完成排列。arraySteps紀錄每次變化後的陣列數據，colorSteps紀錄每次變化後bar該對應的顏色。
+```javascript=
+import { swap } from './helpers';
+const bubbleSort = (array, position, arraySteps, colorSteps) => {
+  let colorKey = colorSteps[colorSteps.length - 1].slice();
+  //輸出完整的arraySteps colorSteps
+  for (let i = 0; i < array.length - 1; i++) {
+    for (let j = 0; j < array.length - i - 1; j++) {
+      if (array[j] > array[j + 1]) {
+        array = swap(array, j, j + 1);
+      }
+      arraySteps.push(array.slice());
+      colorKey[j] = 1;
+      colorKey[j + 1] = 1;
+      colorSteps.push(colorKey.slice());
+      colorKey[j] = 0;
+      colorKey[j + 1] = 0;
+    }
+    //最大值設定為綠色
+    colorKey[array.length - 1 - i] = 2;
+    arraySteps.push(array.slice());
+    colorSteps.push(colorKey.slice());
+  }
+  // Remaining bars become green
+  colorSteps[colorSteps.length - 1] = new Array(array.length).fill(2);
+  return;
+}
+export default bubbleSort;
+```
+### Merge Sort
+Merge Sort是一種Divide and Conquer演算法，會將陣列拆分成最小單位，再比較拆分後陣列數值的大小，依序進行排列。如下圖所示
+
+![](https://i.imgur.com/zAuxjGv.png)
+
+### Quick Sort
+Quick Sortu也是一種Divide and Conquer演算法，原理如下：
+
+在陣列中挑選第一個、最後一個和中間三者中第二小的值稱為pivot，將pivot與最尾端的值互換，然後調整數列，使得「所有在pivot左邊的數，都比pivot還小」，而「在pivot右邊的數都比pivot大」。
+接著，將所有在pivot左邊的數視為「新的數列」，所有在pivot右邊的數視為「另一個新的數列」，「分別」重複上述步驟(選pivot、調整數列)，直到分不出「新的數列」為止。
+### Selection Sort
+Selection Sort的原理只需要重複執行兩個步驟，分別是：
+找最小值從陣列中找到最小值，再把最小值與陣列中未排序最左邊的值進行互換，以此類推完成排列。
+
+![](https://i.imgur.com/q2O2fpM.png)
