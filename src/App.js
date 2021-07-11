@@ -12,7 +12,7 @@ import Bar from './components/Bar';
 class App extends React.Component{
   state={
     array:[],//完整資料
-    arraySteps:[],
+    arraySteps:[],//bar排序的過程中數值的變化步驟 每一個步驟為一個array
     colorKey:[],//決定bar的顏色
     colorSteps:[],//bar排序的過程中顏色的變化步驟 每一個步驟為一個array
     currentStep:0,//bar排序顏色變化的步驟數
@@ -201,7 +201,7 @@ class App extends React.Component{
 
     return(
       <div className="App">
-        <h1>sort visualization</h1>
+        <h1>Sorting Visualization</h1>
         <section className="algorithm Btn">
           <button   
             className="bubblesortBtn"

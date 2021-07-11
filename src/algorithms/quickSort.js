@@ -3,7 +3,6 @@ import { swap, insertStep } from './helpers';
 const quickSort = (array, position, arraySteps, colorSteps) => {
   if (array.length < 2) {
     insertStep(array, position, arraySteps);
-
     let colorKey = colorSteps[colorSteps.length - 1].slice();
     colorKey[position] = 2;
     colorSteps.push(colorKey);

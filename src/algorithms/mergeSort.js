@@ -3,11 +3,9 @@
 function mergeSort(array, position, arraySteps, colorSteps) {
   if (array.length === 1) return array;
   let middle = Math.floor(array.length / 2);
-
   // Split and work recursively
   let arrayL = mergeSort(array.slice(0, middle), position, arraySteps, colorSteps);
   let arrayR = mergeSort(array.slice(middle), position + middle, arraySteps, colorSteps);
-
   let arrayNew = merge(arrayL, arrayR, position, arraySteps, colorSteps);
   arraySteps.push(arraySteps[arraySteps.length - 1].slice());
   colorSteps.push(colorSteps[colorSteps.length - 1].fill(arrayNew.length === arraySteps[0].length ? 2 : 0));
@@ -29,17 +27,13 @@ const merge = (arrayL, arrayR, position, arraySteps, colorSteps) => {
     }
     updateColor(position, colorSteps, arrayNew.length - 1, [], []);
   }
-
   // concatenate remaining values
-
   if (arrayL.length !== 0 || arrayR.length !== 0) {
     updateColor(position, colorSteps, arrayNew.length, arrayL, arrayR);
     arrayNew = arrayNew.concat(arrayL);
     arrayNew = arrayNew.concat(arrayR)
     insertStep(arrayNew, position, arraySteps);
   }
-  
-
   return arrayNew;
 }
 
@@ -50,7 +44,6 @@ function insertStep(arrayNew, position, arraySteps) {
     currentStep.splice(position, arrayNew.length, ...arrayNew);
     arraySteps.push(currentStep);
   }
-
 //colorSteps加入新的一個array(步驟)
 function updateColor(position, colorSteps, start, arrayL, arrayR) {
   //複製colorSteps的最後一個array
@@ -59,7 +52,6 @@ function updateColor(position, colorSteps, start, arrayL, arrayR) {
   let end = position + start + arrayL.length + arrayR.length;
   //計算要更改的元素的起點
   start = start + position;
-
   if (end === start) {
     colorKey.fill(1, start, end + 2);
   } else {
